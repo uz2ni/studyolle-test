@@ -55,7 +55,8 @@ public class AccountService {
 
 	public void login(Account account) {
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken( // 변형된 방법
-				account.getNickname(),
+				//account.getNickname(),  // before
+				new UserAccount(account), // after. Principal 객체 변경
 				account.getPassword(), // 인코딩된 password
 				List.of(new SimpleGrantedAuthority("ROLE_USER")));
 		SecurityContextHolder.getContext().setAuthentication(token);

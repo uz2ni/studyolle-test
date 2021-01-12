@@ -1,43 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymleaf.org"> <!-- timeleaf namespace 설정-->
-<head>
-  <meta charset="UTF-8">
-  <title>Title</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-  <style>
-    .container {
-      max-width: 100%;
-    }
-  </style>
-</head>
+<head th:replace="fragment.html :: head"></head>
 <body class="bg-light">
-<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
-  <a class="navbar-brand" href="/" th:href="@{/}">
-    <img src="/images/logo_sm.png" width="30" height="30">
-  </a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
-        <form th:action="@{/search/study}" class="form-inline" method="get">
-          <input class="form-control mr-sm-2" name="keyword" type="search" placeholder="스터디 찾기" aria-label="Search" />
-        </form>
-      </li>
-    </ul>
-
-    <ul class="navbar-nav justify-content-end">
-      <li class="nav-item">
-        <a class="nav-link" th:href="@{/login}">로그인</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" th:href="@{/signup}">가입</a>
-      </li>
-    </ul>
-  </div>
-</nav>
+<div th:replace="fragment.html :: main-nav"></div> <!-- 상대경로X, 풀네임 -->
 
 <div class="container">
   <div class="py-5 text-center">
@@ -89,12 +54,7 @@
     </form>
   </div>
 
-  <footer th:fragment="footer">
-    <div class="row justify-content-center">
-      <img class="mb-2" src="/images/logo_long_kr.jpg" alt="" width="100">
-      <small class="d-block mb-3 text-muted">&copy; 2020</small>
-    </div>
-  </footer>
+  <div th:replace="fragment.html :: footer"></div>
 </div>
 
 
