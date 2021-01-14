@@ -6,7 +6,6 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,7 +25,7 @@ public class AccountService {
 	@Transactional
 	public Account processNewAccount(SignUpForm signUpForm) {
 		Account newAccount = saveNewAccount(signUpForm); // --> transaction 일어난 상태 (save)
-		newAccount.generateEmailCheckToken(); // --> 토큰 생성 후는 따로 transaction이 일어나지 않는다. 메서드에 @Transaction 추가 필요
+		//newAccount.generateEmailCheckToken(); // --> 토큰 생성 후는 따로 transaction이 일어나지 않는다. 메서드에 @Transaction 추가 필요
 		sendSignUpConfirmMail(newAccount);
 		return newAccount;
 	}
@@ -45,7 +44,9 @@ public class AccountService {
 		return accountRepository.save(account); // -->  transaction 일어남. persist 상태
 	}
 
-	private void sendSignUpConfirmMail(Account newAccount) {
+	public void sendSignUpConfirmMail(Account newAccount) {
+		newAccount.generateEmailCheckToken(); // 토큰 생성 위치 변경 (이유: 메일 재전송 시 토큰을 갱신하기 위함)
+
 		SimpleMailMessage mailMessage = new SimpleMailMessage();
 		mailMessage.setTo(newAccount.getEmail());
 		mailMessage.setSubject("스터디올래, 회원 가입 인증"); // 메일 제목
