@@ -7,6 +7,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +19,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class AccountService {
+public class AccountService implements UserDetailsService {
 
 	private final AccountRepository accountRepository;
 	private final JavaMailSender javaMailSender;
@@ -46,7 +49,6 @@ public class AccountService {
 
 	public void sendSignUpConfirmMail(Account newAccount) {
 		newAccount.generateEmailCheckToken(); // 토큰 생성 위치 변경 (이유: 메일 재전송 시 토큰을 갱신하기 위함)
-
 		SimpleMailMessage mailMessage = new SimpleMailMessage();
 		mailMessage.setTo(newAccount.getEmail());
 		mailMessage.setSubject("스터디올래, 회원 가입 인증"); // 메일 제목
@@ -67,5 +69,20 @@ public class AccountService {
 		Authentication authentication = authenticationManager.authenticate(token); // 매니저를 통해 인증을 거친 토큰을 넣어준다.
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		*/
+	}
+
+	@Override
+	public UserDetails loadUserByUsername(String emailOrNickname) throws UsernameNotFoundException { // login 시 실행됨
+		Account account = accountRepository.findByEmail(emailOrNickname);
+		if(account == null) {
+			account = accountRepository.findByNickname(emailOrNickname);
+		}
+
+		if(account == null) {
+			throw new UsernameNotFoundException(emailOrNickname);
+		}
+		System.out.println("account:");
+		System.out.println(account.isEmailVerified());
+		return new UserAccount(account); // Principal 객체 생성
 	}
 }
