@@ -52,7 +52,7 @@ public class MainControllerTest {
 				.with(csrf()))
 				.andExpect(status().is3xxRedirection())
 				.andExpect(redirectedUrl("/"))
-				.andExpect(authenticated().withUsername("keesun"));
+				.andExpect(authenticated().withUsername("yuja"));
 	}
 
 	@DisplayName("닉네임으로 로그인 성공")
