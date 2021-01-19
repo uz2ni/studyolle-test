@@ -8,6 +8,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.validation.Valid;
@@ -60,8 +61,7 @@ public class AccountController {
 		}
 
 		// 정상 처리
-		account.completeSignUp();
-		accountService.login(account);
+		accountService.completeSignUp(account);
 
 		model.addAttribute("numberOfUser",accountRepository.count());
 		model.addAttribute("nickname",account.getNickname());
@@ -86,5 +86,17 @@ public class AccountController {
 		return "redirect:/";
 	}
 
+
+	@GetMapping("/profile/{nickname}")
+	public String viewProfile(@PathVariable String nickname, Model model, @CurrentUser Account account) {
+		Account byNickname = accountRepository.findByNickname(nickname);
+		if(byNickname == null) {
+			throw new IllegalArgumentException(nickname + "에 해당하는 사용자가 없습니다.");
+		}
+
+		model.addAttribute(byNickname); // 속성명 지정하지 않으면 객체타입 자동 적용
+		model.addAttribute("isOwner", byNickname.equals(account)); // 두 객체의 내용이 같은지 비교
+		return "account/profile";
+	}
 
 }

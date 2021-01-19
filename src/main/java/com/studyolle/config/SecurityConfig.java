@@ -1,6 +1,5 @@
 package com.studyolle.config;
 
-import com.studyolle.account.AccountRepository;
 import com.studyolle.account.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;

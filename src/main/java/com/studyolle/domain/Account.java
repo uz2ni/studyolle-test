@@ -39,7 +39,7 @@ public class Account {
 
 	private String occupation;
 
-	private String liveAround;
+	private String location;
 
 	@Lob @Basic(fetch = FetchType.EAGER)
 	private String profileImage;

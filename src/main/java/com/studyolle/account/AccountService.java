@@ -16,8 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.Valid;
 import java.util.List;
-
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class AccountService implements UserDetailsService {
 
@@ -25,7 +25,7 @@ public class AccountService implements UserDetailsService {
 	private final JavaMailSender javaMailSender;
 	private final PasswordEncoder passwordEncoder;
 
-	@Transactional
+
 	public Account processNewAccount(SignUpForm signUpForm) {
 		Account newAccount = saveNewAccount(signUpForm); // --> transaction 일어난 상태 (save)
 		//newAccount.generateEmailCheckToken(); // --> 토큰 생성 후는 따로 transaction이 일어나지 않는다. 메서드에 @Transaction 추가 필요
@@ -71,6 +71,7 @@ public class AccountService implements UserDetailsService {
 		*/
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public UserDetails loadUserByUsername(String emailOrNickname) throws UsernameNotFoundException { // login 시 실행됨
 		Account account = accountRepository.findByEmail(emailOrNickname);
@@ -84,5 +85,10 @@ public class AccountService implements UserDetailsService {
 		System.out.println("account:");
 		System.out.println(account.isEmailVerified());
 		return new UserAccount(account); // Principal 객체 생성
+	}
+
+	public void completeSignUp(Account account) {
+		account.completeSignUp(); // --> 영속성 컨텍스트에 존재하는 범위가 아니다. (Entity의 값만 변경되었음) --> Service 안으로 코드 변경
+		login(account);
 	}
 }
