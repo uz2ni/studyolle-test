@@ -1,6 +1,7 @@
 package com.studyolle.account;
 
 import com.studyolle.domain.Account;
+import com.studyolle.settings.Profile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -90,5 +91,15 @@ public class AccountService implements UserDetailsService {
 	public void completeSignUp(Account account) {
 		account.completeSignUp(); // --> 영속성 컨텍스트에 존재하는 범위가 아니다. (Entity의 값만 변경되었음) --> Service 안으로 코드 변경
 		login(account);
+	}
+
+	public void updateProfile(Account account, Profile profile) {
+		account.setBio(profile.getBio());
+		account.setLocation(profile.getLocation());
+		account.setOccupation(profile.getOccupation());
+		account.setUrl(profile.getUrl());
+		// TODO 프로필 이미지
+		accountRepository.save(account); // id가 있는지 없는지 판단하여 있으면 merge(update) 시킨다.
+		// TODO 문제가 하나 더 남았습니다.
 	}
 }
