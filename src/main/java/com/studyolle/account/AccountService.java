@@ -1,8 +1,9 @@
 package com.studyolle.account;
 
+import com.studyolle.account.form.SignUpForm;
 import com.studyolle.domain.Account;
-import com.studyolle.settings.Notifications;
-import com.studyolle.settings.Profile;
+import com.studyolle.settings.form.Notifications;
+import com.studyolle.settings.form.Profile;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.mail.SimpleMailMessage;
@@ -62,7 +63,6 @@ public class AccountService implements UserDetailsService {
 
 	public void login(Account account) {
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken( // 변형된 방법
-				//account.getNickname(),  // before
 				new UserAccount(account), // after. Principal 객체 변경
 				account.getPassword(), // 인코딩된 password
 				List.of(new SimpleGrantedAuthority("ROLE_USER")));
@@ -98,11 +98,6 @@ public class AccountService implements UserDetailsService {
 
 	public void updateProfile(Account account, Profile profile) {
 		modelMapper.map(profile, account);
-//		account.setBio(profile.getBio());
-//		account.setLocation(profile.getLocation());
-//		account.setOccupation(profile.getOccupation());
-//		account.setUrl(profile.getUrl());
-//		account.setProfileImage(profile.getProfileImage());
 		accountRepository.save(account); // id가 있는지 없는지 판단하여 있으면 merge(update) 시킨다.
 		// TODO 문제가 하나 더 남았습니다.
 	}
@@ -114,12 +109,22 @@ public class AccountService implements UserDetailsService {
 
 	public void updateNotifications(Account account, Notifications notifications) {
 		modelMapper.map(notifications, account);
-//		account.setStudyCreatedByWeb(notifications.isStudyCreatedByWeb());
-//		account.setStudyCreatedByEmail(notifications.isStudyCreatedByEmail());
-//		account.setStudyUpdatedByWeb(notifications.isStudyUpdatedByWeb());
-//		account.setStudyUpdatedByEmail(notifications.isStudyUpdatedByEmail());
-//		account.setStudyEnrollmentResultByEmail(notifications.isStudyEnrollmentResultByEmail());
-//		account.setStudyEnrollmentResultByWeb(notifications.isStudyEnrollmentResultByWeb());
 		accountRepository.save(account);
+	}
+
+	public void updateNickname(Account account, String nickname) {
+		account.setNickname(nickname);
+		accountRepository.save(account);
+		login(account);
+	}
+
+	public void sendLoginLink(Account account) {
+		account.generateEmailCheckToken();
+		SimpleMailMessage mailMessage = new SimpleMailMessage();
+		mailMessage.setTo(account.getEmail());
+		mailMessage.setSubject("스터디올래, 로그인 링크");
+		mailMessage.setText("/login-by-email?token=" + account.getEmailCheckToken() +
+				"&email=" + account.getEmail());
+		javaMailSender.send(mailMessage);
 	}
 }

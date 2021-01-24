@@ -1,5 +1,7 @@
 package com.studyolle.account;
 
+import com.studyolle.account.form.SignUpForm;
+import com.studyolle.account.validate.SignUpFormValidator;
 import com.studyolle.domain.Account;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 
@@ -97,6 +100,37 @@ public class AccountController {
 		model.addAttribute(byNickname); // 속성명 지정하지 않으면 객체타입 자동 적용
 		model.addAttribute("isOwner", byNickname.equals(account)); // 두 객체의 내용이 같은지 비교
 		return "account/profile";
+	}
+
+	@PostMapping("/email-login")
+	public String sendEmailLoginLink(String email, Model model, RedirectAttributes attributes) {
+		Account account = accountRepository.findByEmail(email);
+		if (account == null) {
+			model.addAttribute("error", "유효한 이메일 주소가 아닙니다.");
+			return "account/email-login";
+		}
+
+		if (!account.canSendConfirmEmail()) {
+			model.addAttribute("error", "이메일 로그인은 1시간 뒤에 사용할 수 있습니다.");
+//			return "account/email-login";
+		}
+
+		accountService.sendLoginLink(account);
+		attributes.addFlashAttribute("message", "이메일 인증 메일을 발송했습니다.");
+		return "redirect:/email-login";
+	}
+
+	@GetMapping("/login-by-email")
+	public String loginByEmail(String token, String email, Model model) {
+		Account account = accountRepository.findByEmail(email);
+		String view = "account/logged-in-by-email";
+		if (account == null || !account.isValidToken(token)) {
+			model.addAttribute("error", "로그인할 수 없습니다.");
+			return view;
+		}
+
+		accountService.login(account);
+		return view;
 	}
 
 }
