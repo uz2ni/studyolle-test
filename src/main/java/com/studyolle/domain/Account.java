@@ -47,15 +47,18 @@ public class Account {
 	/* 알림 설정 값 체크 */
 	private boolean studyCreatedByEmail;
 
-	private boolean studyCreatedByWeb;
+	@Builder.Default
+	private boolean studyCreatedByWeb = true;
 
 	private boolean studyEnrollmentResultByEmail;
 
-	private boolean studyEnrollmentResultByWeb;
+	@Builder.Default
+	private boolean studyEnrollmentResultByWeb = true;
 
 	private boolean studyUpdatedByEmail;
 
-	private boolean studyUpdatedByWeb;
+	@Builder.Default
+	private boolean studyUpdatedByWeb = true;
 
 	public void generateEmailCheckToken() {
 		this.emailCheckToken = UUID.randomUUID().toString();
