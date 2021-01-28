@@ -43,16 +43,9 @@ public class AccountService implements UserDetailsService {
 	}
 
 	private Account saveNewAccount(@Valid SignUpForm signUpForm) {
-		Account account = Account.builder()
-				.email(signUpForm.getEmail())
-				.nickname(signUpForm.getNickname())
-				.password(passwordEncoder.encode(signUpForm.getPassword()))
-				.studyCreatedByWeb(true)
-				.studyEnrollmentResultByWeb(true)
-				.studyUpdatedByWeb(true)
-				// byEamil 설정값은 기본 false
-				.build();
-
+		signUpForm.setPassword(passwordEncoder.encode(signUpForm.getPassword()));
+		Account account = modelMapper.map(signUpForm, Account.class);
+		//account.generateEmailCheckToken();
 		return accountRepository.save(account); // -->  transaction 일어남. persist 상태
 	}
 
