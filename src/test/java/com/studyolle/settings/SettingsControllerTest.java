@@ -6,9 +6,13 @@ import com.studyolle.account.AccountRepository;
 import com.studyolle.account.AccountService;
 import com.studyolle.domain.Account;
 import com.studyolle.domain.Tag;
+import com.studyolle.domain.Zone;
 import com.studyolle.settings.form.TagForm;
+import com.studyolle.settings.form.ZoneForm;
 import com.studyolle.tag.TagRepository;
+import com.studyolle.zone.ZoneRepository;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,13 +53,72 @@ class SettingsControllerTest {
 	@Autowired
 	AccountService accountService;
 
+	@Autowired
+	ZoneRepository zoneRepository;
+
+	private Zone testZone = Zone.builder().city("test").localNameOfCity("테스트시").province("테스트주").build();
+
+	@BeforeEach
+	void beforeEach() {
+		zoneRepository.save(testZone);
+	}
 
 	@AfterEach
 	void afterEach() {
 		accountRepository.deleteAll();
+		zoneRepository.deleteAll();
 	}
 
-	@WithAccount("keesun")
+	@WithAccount("yuja")
+	@DisplayName("계정의 지역 정보 수정 폼")
+	@Test
+	void updateZonesForm() throws Exception {
+		mockMvc.perform(get(ROOT + SETTINGS + ZONES))
+				.andExpect(view().name(SETTINGS + ZONES))
+				.andExpect(model().attributeExists("account"))
+				.andExpect(model().attributeExists("whitelist"))
+				.andExpect(model().attributeExists("zones"));
+	}
+
+	@WithAccount("yuja")
+	@DisplayName("계정의 지역 정보 추가")
+	@Test
+	void addZone() throws Exception {
+		ZoneForm zoneForm = new ZoneForm();
+		zoneForm.setZoneName(testZone.toString());
+
+		mockMvc.perform(post(ROOT + SETTINGS + ZONES + "/add")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(zoneForm))
+				.with(csrf()))
+				.andExpect(status().isOk());
+
+		Account yuja = accountRepository.findByNickname("yuja");
+		Zone zone = zoneRepository.findByCityAndProvince(testZone.getCity(), testZone.getProvince());
+		assertTrue(yuja.getZones().contains(zone));
+	}
+
+	@WithAccount("yuja")
+	@DisplayName("계정의 지역 정보 추가")
+	@Test
+	void removeZone() throws Exception {
+		Account yuja = accountRepository.findByNickname("yuja");
+		Zone zone = zoneRepository.findByCityAndProvince(testZone.getCity(), testZone.getProvince());
+		accountService.addZone(yuja, zone);
+
+		ZoneForm zoneForm = new ZoneForm();
+		zoneForm.setZoneName(testZone.toString());
+
+		mockMvc.perform(post(ROOT + SETTINGS + ZONES + "/remove")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(zoneForm))
+				.with(csrf()))
+				.andExpect(status().isOk());
+
+		assertFalse(yuja.getZones().contains(zone));
+	}
+
+	@WithAccount("yuja")
 	@DisplayName("계정의 태그 수정 폼")
 	@Test
 	void updateTagsForm() throws Exception {
@@ -66,7 +129,7 @@ class SettingsControllerTest {
 				.andExpect(model().attributeExists("tags"));
 	}
 
-	@WithAccount("keesun")
+	@WithAccount("yuja")
 	@DisplayName("계정에 태그 추가")
 	@Test
 	void addTag() throws Exception {
@@ -81,19 +144,19 @@ class SettingsControllerTest {
 
 		Tag newTag = tagRepository.findByTitle("newTag");
 		assertNotNull(newTag);
-		Account keesun = accountRepository.findByNickname("keesun");
-		assertTrue(keesun.getTags().contains(newTag));
+		Account yuja = accountRepository.findByNickname("yuja");
+		assertTrue(yuja.getTags().contains(newTag));
 	}
 
-	@WithAccount("keesun")
+	@WithAccount("yuja")
 	@DisplayName("계정에 태그 삭제")
 	@Test
 	void removeTag() throws Exception {
-		Account keesun = accountRepository.findByNickname("keesun");
+		Account yuja = accountRepository.findByNickname("yuja");
 		Tag newTag = tagRepository.save(Tag.builder().title("newTag").build());
-		accountService.addTag(keesun, newTag);
+		accountService.addTag(yuja, newTag);
 
-		assertTrue(keesun.getTags().contains(newTag));
+		assertTrue(yuja.getTags().contains(newTag));
 
 		TagForm tagForm = new TagForm();
 		tagForm.setTagTitle("newTag");
@@ -104,10 +167,10 @@ class SettingsControllerTest {
 				.with(csrf()))
 				.andExpect(status().isOk());
 
-		assertFalse(keesun.getTags().contains(newTag));
+		assertFalse(yuja.getTags().contains(newTag));
 	}
 
-	@WithAccount("keesun")
+	@WithAccount("yuja")
 	@DisplayName("닉네임 수정 폼")
 	@Test
 	void updateAccountForm() throws Exception {
@@ -117,7 +180,7 @@ class SettingsControllerTest {
 				.andExpect(model().attributeExists("nicknameForm"));
 	}
 
-	@WithAccount("keesun")
+	@WithAccount("yuja")
 	@DisplayName("닉네임 수정하기 - 입력값 정상")
 	@Test
 	void updateAccount_success() throws Exception {
@@ -132,7 +195,7 @@ class SettingsControllerTest {
 		assertNotNull(accountRepository.findByNickname("whiteship"));
 	}
 
-	@WithAccount("keesun")
+	@WithAccount("yuja")
 	@DisplayName("닉네임 수정하기 - 입력값 에러")
 	@Test
 	void updateAccount_failure() throws Exception {
@@ -147,7 +210,7 @@ class SettingsControllerTest {
 				.andExpect(model().attributeExists("nicknameForm"));
 	}
 
-	@WithAccount("keesun")
+	@WithAccount("yuja")
 	@DisplayName("프로필 수정 폼")
 	@Test
 	void updateProfileForm() throws Exception {
@@ -157,7 +220,7 @@ class SettingsControllerTest {
 				.andExpect(model().attributeExists("profile"));
 	}
 
-	@WithAccount("keesun")
+	@WithAccount("yuja")
 	@DisplayName("프로필 수정하기 - 입력값 정상")
 	@Test
 	void updateProfile() throws Exception {
@@ -169,11 +232,11 @@ class SettingsControllerTest {
 				.andExpect(redirectedUrl(ROOT + SETTINGS + PROFILE))
 				.andExpect(flash().attributeExists("message"));
 
-		Account keesun = accountRepository.findByNickname("keesun");
-		assertEquals(bio, keesun.getBio());
+		Account yuja = accountRepository.findByNickname("yuja");
+		assertEquals(bio, yuja.getBio());
 	}
 
-	@WithAccount("keesun")
+	@WithAccount("yuja")
 	@DisplayName("프로필 수정하기 - 입력값 에러")
 	@Test
 	void updateProfile_error() throws Exception {
@@ -187,11 +250,11 @@ class SettingsControllerTest {
 				.andExpect(model().attributeExists("profile"))
 				.andExpect(model().hasErrors());
 
-		Account keesun = accountRepository.findByNickname("keesun");
-		assertNull(keesun.getBio());
+		Account yuja = accountRepository.findByNickname("yuja");
+		assertNull(yuja.getBio());
 	}
 
-	@WithAccount("keesun")
+	@WithAccount("yuja")
 	@DisplayName("패스워드 수정 폼")
 	@Test
 	void updatePassword_form() throws Exception {
@@ -201,7 +264,7 @@ class SettingsControllerTest {
 				.andExpect(model().attributeExists("passwordForm"));
 	}
 
-	@WithAccount("keesun")
+	@WithAccount("yuja")
 	@DisplayName("패스워드 수정 - 입력값 정상")
 	@Test
 	void updatePassword_success() throws Exception {
@@ -213,11 +276,11 @@ class SettingsControllerTest {
 				.andExpect(redirectedUrl(ROOT + SETTINGS + PASSWORD))
 				.andExpect(flash().attributeExists("message"));
 
-		Account keesun = accountRepository.findByNickname("keesun");
-		assertTrue(passwordEncoder.matches("12345678", keesun.getPassword()));
+		Account yuja = accountRepository.findByNickname("yuja");
+		assertTrue(passwordEncoder.matches("12345678", yuja.getPassword()));
 	}
 
-	@WithAccount("keesun")
+	@WithAccount("yuja")
 	@DisplayName("패스워드 수정 - 입력값 에러 - 패스워드 불일치")
 	@Test
 	void updatePassword_fail() throws Exception {
