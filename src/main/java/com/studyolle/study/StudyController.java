@@ -13,6 +13,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.validation.Valid;
@@ -23,6 +24,7 @@ import java.nio.charset.StandardCharsets;
 @RequiredArgsConstructor
 public class StudyController {
 
+	private final StudyRepository studyRepository;
 	private final StudyService studyService;
 	private final ModelMapper modelMapper;
 	private final StudyFormValidator studyFormValidator;
@@ -30,6 +32,13 @@ public class StudyController {
 	@InitBinder("studyForm")
 	public void studyFormInitBinder(WebDataBinder webDataBinder) {
 		webDataBinder.addValidators(studyFormValidator);
+	}
+
+	@GetMapping("/study/{path}")
+	public String viewStudy(@CurrentAccount Account account, @PathVariable String path, Model model) {
+		model.addAttribute(account);
+		model.addAttribute(studyRepository.findByPath(path));
+		return "study/view";
 	}
 
 	@GetMapping("/new-study")

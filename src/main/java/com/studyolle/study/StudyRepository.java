@@ -9,4 +9,5 @@ public interface StudyRepository extends JpaRepository<Study, Long>{
 
 	boolean existsByPath(String path);
 
+	Study findByPath(String path);
 }
