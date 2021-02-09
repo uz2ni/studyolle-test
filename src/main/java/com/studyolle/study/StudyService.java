@@ -44,4 +44,16 @@ public class StudyService {
 	public void updateStudyDescription(Study study, StudyDescriptionForm studyDescriptionForm) {
 		modelMapper.map(studyDescriptionForm, study); // form->study객체에 담는 로직. study는 영속성 상태이므로 commit 시 update study 쿼리 실행 됨
 	}
+
+	public void updateStudyImage(Study study, String image) {
+		study.setImage(image);
+	}
+
+	public void enableStudyBanner(Study study) {
+		study.setUseBanner(true);
+	}
+
+	public void disableStudyBanner(Study study) {
+		study.setUseBanner(false);
+	}
 }
