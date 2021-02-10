@@ -1,23 +1,30 @@
 package com.studyolle.study;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.studyolle.account.CurrentAccount;
 import com.studyolle.domain.Account;
 import com.studyolle.domain.Study;
+import com.studyolle.domain.Tag;
+import com.studyolle.tag.TagForm;
 import com.studyolle.study.form.StudyDescriptionForm;
+import com.studyolle.tag.TagRepository;
+import com.studyolle.tag.TagService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 @Controller
 @RequestMapping("/study/{path}/settings")
@@ -26,6 +33,10 @@ public class StudySettingController {
 
 	private final StudyService studyService;
 	private final ModelMapper modelMapper;
+	private final TagService tagService;
+	private final TagRepository tagRepository;
+	//private final ZoneRepository zoneRepository;
+	private final ObjectMapper objectMapper;
 
 	@GetMapping("/description")
 	public String viewStudySetting(@CurrentAccount Account account, @PathVariable String path, Model model) {
@@ -89,4 +100,45 @@ public class StudySettingController {
 		return "redirect:/study/" + getPath(path) + "/settings/banner";
 	}
 
+	@GetMapping("/tags")
+	public String studyTagForm(@CurrentAccount Account account, @PathVariable String path, Model model) throws JsonProcessingException {
+		Study study = studyService.getStudyToUpdate(account, path);
+		model.addAttribute(account);
+		model.addAttribute(study);
+
+		// 해당 study에 존재하는 태그 list 가져오기
+		model.addAttribute("tags", study.getTags().stream()
+				.map(Tag::getTitle).collect(Collectors.toList()));
+
+		// 전체 태그 list 가져오기 (뷰에서 태그 목록 보여줘야 하니까)
+		List<String> allTagTitles = tagRepository.findAll().stream()
+				.map(Tag::getTitle).collect(Collectors.toList());
+
+		// object to json
+		model.addAttribute("whitelist", objectMapper.writeValueAsString(allTagTitles));
+
+		return "study/settings/tags";
+	}
+
+	@PostMapping("/tags/add")
+	@ResponseBody
+	public ResponseEntity addTag(@CurrentAccount Account account, @PathVariable String path, @RequestBody TagForm tagForm) {
+		Study study = studyService.getStudyToUpdateTag(account, path);
+		Tag tag = tagService.findOrCreateNew(tagForm.getTagTitle());
+		studyService.addTag(study, tag);
+		return ResponseEntity.ok().build();
+	}
+
+	@PostMapping("/tags/remove")
+	@ResponseBody
+	public ResponseEntity removeTag(@CurrentAccount Account account, @PathVariable String path, @RequestBody TagForm tagForm) {
+		Study study = studyService.getStudyToUpdateTag(account, path);
+		Tag tag = tagRepository.findByTitle(tagForm.getTagTitle());
+		if(tag == null) {
+			return ResponseEntity.badRequest().build();
+		}
+
+		studyService.removeTag(study, tag);
+		return ResponseEntity.ok().build();
+	}
 }

@@ -7,7 +7,7 @@ import com.studyolle.account.AccountService;
 import com.studyolle.domain.Account;
 import com.studyolle.domain.Tag;
 import com.studyolle.domain.Zone;
-import com.studyolle.settings.form.TagForm;
+import com.studyolle.tag.TagForm;
 import com.studyolle.settings.form.ZoneForm;
 import com.studyolle.tag.TagRepository;
 import com.studyolle.zone.ZoneRepository;
