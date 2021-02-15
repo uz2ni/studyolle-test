@@ -93,4 +93,36 @@ public class EventController {
 		return "study/events";
 	}
 
+	@GetMapping("/events/{id}/edit")
+	public String updateEventForm(@CurrentAccount Account account,
+	                              @PathVariable String path, @PathVariable Long id, Model model) {
+		Study study = studyService.getStudyToUpdate(account, path);
+		Event event = eventRepository.findById(id).orElseThrow();
+		model.addAttribute(study);
+		model.addAttribute(account);
+		model.addAttribute(event);
+		model.addAttribute(modelMapper.map(event, EventForm.class));
+		return "event/update-form";
+	}
+
+	@PostMapping("/events/{id}/edit")
+	public String updateEventSubmit(@CurrentAccount Account account, @PathVariable String path,
+	                                @PathVariable Long id, @Valid EventForm eventForm, Errors errors,
+	                                Model model) {
+		Study study = studyService.getStudyToUpdate(account, path);
+		Event event = eventRepository.findById(id).orElseThrow();
+		eventForm.setEventType(event.getEventType()); // 이벤트타입이 변경되어 서버로 들어오는 것을 막기 위해 원래 이벤트타입을 재셋팅 해줌
+		eventValidator.validateUpdateForm(eventForm, event, errors);
+
+		if (errors.hasErrors()) {
+			model.addAttribute(account);
+			model.addAttribute(study);
+			model.addAttribute(event);
+			return "event/update-form";
+		}
+
+		eventService.updateEvent(event, eventForm);
+		return "redirect:/study/" + study.getEncodedPath() +  "/events/" + event.getId();
+	}
+
 }
