@@ -1,7 +1,7 @@
 package com.studyolle.main;
 
-import com.studyolle.account.CurrentAccount;
-import com.studyolle.domain.Account;
+import com.studyolle.modules.account.CurrentAccount;
+import com.studyolle.modules.account.Account;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

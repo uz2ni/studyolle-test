@@ -1,6 +1,6 @@
 package com.studyolle.event.form;
 
-import com.studyolle.domain.EventType;
+import com.studyolle.event.EventType;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;

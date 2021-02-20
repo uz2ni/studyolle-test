@@ -1,14 +1,12 @@
 package com.studyolle.event;
 
-import com.studyolle.account.CurrentAccount;
-import com.studyolle.domain.Account;
-import com.studyolle.domain.Enrollment;
-import com.studyolle.domain.Event;
-import com.studyolle.domain.Study;
+import com.studyolle.modules.account.CurrentAccount;
+import com.studyolle.modules.account.Account;
+import com.studyolle.modules.study.Study;
 import com.studyolle.event.form.EventForm;
 import com.studyolle.event.validator.EventValidator;
-import com.studyolle.study.StudyRepository;
-import com.studyolle.study.StudyService;
+import com.studyolle.modules.study.StudyRepository;
+import com.studyolle.modules.study.StudyService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Controller;

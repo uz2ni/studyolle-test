@@ -103,6 +103,12 @@
             <artifactId>modelmapper</artifactId>
             <version>2.3.6</version>
         </dependency>
+        <dependency> <!-- 아키텍처 테스트 유틸리티 (JUnit 5 지원) -->
+            <groupId>com.tngtech.archunit</groupId>
+            <artifactId>archunit-junit5</artifactId>
+            <version>0.13.1</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

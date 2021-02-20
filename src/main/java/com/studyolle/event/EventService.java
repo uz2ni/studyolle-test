@@ -1,9 +1,7 @@
 package com.studyolle.event;
 
-import com.studyolle.domain.Account;
-import com.studyolle.domain.Enrollment;
-import com.studyolle.domain.Event;
-import com.studyolle.domain.Study;
+import com.studyolle.modules.account.Account;
+import com.studyolle.modules.study.Study;
 import com.studyolle.event.form.EventForm;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;

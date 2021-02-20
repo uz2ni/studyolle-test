@@ -1,6 +1,5 @@
 package com.studyolle.tag;
 
-import com.studyolle.domain.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

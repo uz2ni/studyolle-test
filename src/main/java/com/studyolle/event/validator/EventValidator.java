@@ -1,6 +1,6 @@
 package com.studyolle.event.validator;
 
-import com.studyolle.domain.Event;
+import com.studyolle.event.Event;
 import com.studyolle.event.form.EventForm;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
