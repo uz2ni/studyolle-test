@@ -22,7 +22,7 @@ public class PackageDependencyTests {
 			.resideInAnyPackage("com.studyolle.modules..");
 
 	@ArchTest
-	ArchRule studyPackageRule = classes().that().resideInAPackage("..modules.study..")
+ArchRule studyPackageRule = classes().that().resideInAPackage("..modules.study..")
 			.should().onlyBeAccessed().byClassesThat()
 			.resideInAnyPackage(STUDY, EVENT);
 
@@ -37,5 +37,6 @@ public class PackageDependencyTests {
 	@ArchTest
 	ArchRule cycleCheck = slices().matching("com.studyolle.modules.(*)..")
 			.should().beFreeOfCycles();
+
 }
 

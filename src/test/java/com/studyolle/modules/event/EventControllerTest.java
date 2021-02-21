@@ -1,18 +1,12 @@
-package com.studyolle.modules.study;
+package com.studyolle.modules.event;
 
-import com.studyolle.modules.account.WithAccount;
 import com.studyolle.modules.account.Account;
-import com.studyolle.modules.event.Event;
-import com.studyolle.modules.event.EventType;
-import com.studyolle.modules.event.EnrollmentRepository;
-import com.studyolle.modules.event.EventService;
-import lombok.RequiredArgsConstructor;
+import com.studyolle.modules.account.WithAccount;
+import com.studyolle.modules.study.Study;
+import com.studyolle.modules.study.StudyControllerTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -22,16 +16,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Transactional
-@SpringBootTest
-@AutoConfigureMockMvc
-@RequiredArgsConstructor
 class EventControllerTest extends StudyControllerTest {
 
 	@Autowired
 	EventService eventService;
-	@Autowired
-	EnrollmentRepository enrollmentRepository;
+	@Autowired EnrollmentRepository enrollmentRepository;
 
 	@Test
 	@DisplayName("선착순 모임에 참가 신청 - 자동 수락")

@@ -2,8 +2,8 @@ package com.studyolle.modules.study;
 
 import com.studyolle.modules.account.Account;
 import com.studyolle.modules.account.UserAccount;
-import com.studyolle.tag.Tag;
-import com.studyolle.zone.Zone;
+import com.studyolle.modules.tag.Tag;
+import com.studyolle.modules.zone.Zone;
 import lombok.*;
 
 import javax.persistence.*;
@@ -163,4 +163,7 @@ public class Study {
 		return URLEncoder.encode(this.path, StandardCharsets.UTF_8);
 	}
 
+	public boolean isManagedBy(Account account) {
+		return this.getManagers().contains(this);
+	}
 }

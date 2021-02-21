@@ -1,8 +1,7 @@
 package com.studyolle.modules.account;
 
-import com.studyolle.modules.study.Study;
-import com.studyolle.tag.Tag;
-import com.studyolle.zone.Zone;
+import com.studyolle.modules.tag.Tag;
+import com.studyolle.modules.zone.Zone;
 import lombok.*;
 
 import javax.persistence.*;
@@ -87,9 +86,5 @@ public class Account {
 
 	public boolean canSendConfirmEmail() {
 		return this.emailCheckTokenGeneratedAt.isBefore(LocalDateTime.now().minusHours(1));
-	}
-
-	public boolean isManagerOf(Study study) {
-		return study.getManagers().contains(this);
 	}
 }

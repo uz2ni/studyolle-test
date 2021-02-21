@@ -1,8 +1,8 @@
 package com.studyolle.modules.study;
 
 import com.studyolle.modules.account.Account;
-import com.studyolle.tag.Tag;
-import com.studyolle.zone.Zone;
+import com.studyolle.modules.tag.Tag;
+import com.studyolle.modules.zone.Zone;
 import com.studyolle.modules.study.form.StudyDescriptionForm;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -94,7 +94,7 @@ public class StudyService {
 	}
 
 	private void checkIfManager(Account account, Study study) {
-		if (!account.isManagerOf(study)) {
+		if (!study.isManagedBy(account)) {
 			throw new AccessDeniedException("해당 기능을 사용할 수 없습니다.");
 		}
 	}

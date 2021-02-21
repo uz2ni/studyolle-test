@@ -1,6 +1,6 @@
 package com.studyolle.modules.study;
 
-import com.studyolle.WithAccount;
+import com.studyolle.modules.account.WithAccount;
 import com.studyolle.modules.account.AccountRepository;
 import com.studyolle.modules.account.Account;
 import lombok.RequiredArgsConstructor;
