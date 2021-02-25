@@ -111,7 +111,7 @@ public class StudyService {
 
 	public void publish(Study study) {
 		study.publish();
-		eventPublisher.publishEvent(new StudyCreatedEvent(study));
+		this.eventPublisher.publishEvent(new StudyCreatedEvent(study));
 	}
 
 	public void close(Study study) {

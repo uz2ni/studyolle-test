@@ -167,6 +167,6 @@ public class Study {
 	}
 
 	public boolean isManagedBy(Account account) {
-		return this.getManagers().contains(this);
+		return this.getManagers().contains(account);
 	}
 }
